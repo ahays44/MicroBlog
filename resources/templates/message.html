@@ -1,19 +1,10 @@
-
 <html>
 <body>
+
 <form action="/create-message" method="post">
     <input type="text" placeholder="Write a message" name="createMessage"/>
     <button type="submit">Submit</button>
 </form>
-<form action="/edit" method="post">
-    <input type="number" placeholder="Index number" name="messageIndex"/>
-    <input type="text" placeholder="Enter new text" name="editMessage"/>
-    <button type="submit">Edit</button>
-</form>
-<form action="/delete" method="post">
-    <input type="number" placeholder="Index number" name="deleteMessage"/>
-    <button type="submit">Delete</button>
-</form><br>
 
 Messages by {{name}}:</br>
 <ol>
@@ -21,6 +12,7 @@ Messages by {{name}}:</br>
     <li>{{message}}</li>
     {{/messages}}
 </ol>
+
 <form action="/logout" method="post">
     <button type="submit">Logout</button>
 </form>
