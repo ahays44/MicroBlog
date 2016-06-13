@@ -10,11 +10,6 @@ public class Main {
 
     static HashMap<String, User> users = new HashMap<>();
 
-    static User getUser(Session session) {
-        String name = session.attribute("userName");
-        return users.get(name);
-    }
-
     public static void main(String[] args) {
 
         Spark.init();
@@ -22,13 +17,17 @@ public class Main {
         Spark.get(
                 "/",
                 ((request, response) -> {
-
-                    User user = getUser(request.session());
+                    HashMap map = new HashMap();
+                    Session session = request.session();
+                    String name = session.attribute("userName");
+                    User user = users.get(name);
 
                     if (user == null) {
-                        return new ModelAndView(null, "index.html");
+                        return new ModelAndView(map, "index.html");
                     }
                     else {
+                        map.put("createUser", user.messages);
+                        map.put("createPass", user.password);
                         return new ModelAndView(user, "messages.html");
                     }
                 }),
@@ -37,34 +36,37 @@ public class Main {
 
         Spark.post(
                 "/create-user",
-                ((request, response) -> {
-                    String name = request.queryParams("createUser");
-                    String password = request.queryParams("createPass");
-                    User user = users.get(name);
-                    if (user == null) {
-                        user = new User(name, password);
-                        users.put(name, user);
-                    }
-                    Session session = request.session();
-                    session.attribute("userName", name);
+                 (request, response) -> {
+                     String name = request.queryParams("createUser");
+                     String password = request.queryParams("createPass");
+                     User user = users.get(name);
 
-                    if (users.get(name).password.equals(password)) {
-                        response.redirect("/");
-                        return "";
-                    }
-                    else {
-                        Spark.halt("403");
-                        return "";
-                    }
-                })
+                     if (user == null) {
+                         user = new User(name, password);
+                         users.put(name, user);
+                     }
+
+
+                     if (users.get(name).password.equals(password)) {
+                         Session session = request.session();
+                         session.attribute("userName", name);
+
+                     }
+                     response.redirect("/");
+                     return "";
+                 }
+
         );
 
         Spark.post(
                 "/create-message",
                 ((request, response) -> {
-                    User user = getUser(request.session());
-                    Message message = new Message(request.queryParams(("createMessage")));
-                    user.messages.add(message);
+                    Session session = request.session();
+                    String name = session.attribute("userName");
+                    User user = users.get(name);
+                    String message = request.queryParams("createMessage");
+                    Message mess = new Message(message, user.messages.size();
+                    user.messages.add(mess);
                     response.redirect("/");
                     return "";
                 })
@@ -75,6 +77,33 @@ public class Main {
                 ((request, response) -> {
                     Session session = request.session();
                     session.invalidate();
+                    response.redirect("/");
+                    return "";
+                })
+        );
+
+        Spark.post(
+                "/edit",
+                ((request, response) -> {
+                    User user = getUser(request.session());
+                    int index = Integer.valueOf(request.queryParams("messageIndex"));
+                    user.messages.get(index).message = request.queryParams("editMessage");
+                    response.redirect("/");
+                    return "";
+                })
+        );
+        Spark.post(
+                "/delete",
+                ((request, response) -> {
+                    User user = getUser(request.session());
+                    String input = request.queryParams("deleteMessage");
+                    if (!input.isEmpty()) {
+                        int index = Integer.valueOf(input);
+                        user.messages.remove(index - 1);
+                    }
+                    else {
+                        user.messages.remove(0);
+                    }
                     response.redirect("/");
                     return "";
                 })
