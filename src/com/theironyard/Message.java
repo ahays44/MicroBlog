@@ -9,7 +9,7 @@ public class Message {
         this.message = message;
     }
 
-    public Message(int index) {
+    public Message(String message, int index) {
         this.index = index;
     }
 }

@@ -65,7 +65,7 @@ public class Main {
                     String name = session.attribute("userName");
                     User user = users.get(name);
                     String message = request.queryParams("createMessage");
-                    Message mess = new Message(message, user.messages.size();
+                    Message mess = new Message(message, user.messages.size());
                     user.messages.add(mess);
                     response.redirect("/");
                     return "";
@@ -85,7 +85,9 @@ public class Main {
         Spark.post(
                 "/edit",
                 ((request, response) -> {
-                    User user = getUser(request.session());
+                    Session session = request.session();
+                    String name = session.attribute("userName");
+                    User user = users.get(name);
                     int index = Integer.valueOf(request.queryParams("messageIndex"));
                     user.messages.get(index).message = request.queryParams("editMessage");
                     response.redirect("/");
@@ -95,7 +97,9 @@ public class Main {
         Spark.post(
                 "/delete",
                 ((request, response) -> {
-                    User user = getUser(request.session());
+                    Session session = request.session();
+                    String name = session.attribute("userName");
+                    User user = users.get(name);
                     String input = request.queryParams("deleteMessage");
                     if (!input.isEmpty()) {
                         int index = Integer.valueOf(input);
