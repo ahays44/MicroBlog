@@ -28,7 +28,7 @@ public class Main {
                     else {
                         map.put("createUser", user.messages);
                         map.put("createPass", user.password);
-                        return new ModelAndView(user, "messages.html");
+                        return new ModelAndView(user, "message.html");
                     }
                 }),
                 new MustacheTemplateEngine()
@@ -46,12 +46,11 @@ public class Main {
                          users.put(name, user);
                      }
 
-
-                     if (users.get(name).password.equals(password)) {
-                         Session session = request.session();
-                         session.attribute("userName", name);
-
+                      else if (!password.equals(user.password)) {
+                         throw new Exception("Invalid Password");
                      }
+                     Session session = request.session();
+                     session.attribute("userName", name);
                      response.redirect("/");
                      return "";
                  }
